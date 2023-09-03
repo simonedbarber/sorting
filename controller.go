@@ -2,15 +2,13 @@ package sorting
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"path"
 	"strconv"
 
-	"github.com/qor/admin"
-	"github.com/qor/qor"
-	"github.com/qor/qor/resource"
-	"github.com/qor/roles"
+	"github.com/simonedbarber/admin"
+	"github.com/simonedbarber/qor/resource"
+	"github.com/simonedbarber/roles"
 )
 
 func updatePosition(context *admin.Context) {
@@ -57,31 +55,31 @@ func (s *Sorting) ConfigureQorResourceBeforeInitialize(res resource.Resourcer) {
 			})
 		}
 
-		res.Meta(&admin.Meta{
-			Name: "Position",
-			Valuer: func(value interface{}, ctx *qor.Context) interface{} {
-				db := ctx.GetDB()
-				var count int
-				var pos = value.(sortingInterface).GetPosition()
+		/*
+			res.Meta(&admin.Meta{
+				Name: "Position",
+				Valuer: func(value interface{}, ctx *qor.Context) interface{} {
+					db := ctx.GetDB()
+					var count int
+					var pos = value.(sortingInterface).GetPosition()
 
-				if _, ok := modelValue(value).(sortingDescInterface); ok {
-					if total, ok := db.Get("sorting_total_count"); ok {
-						count = total.(int)
-					} else {
-						var result = res.NewStruct()
-						db.New().Order("position DESC", true).First(result)
-						count = result.(sortingInterface).GetPosition()
-						db.InstantSet("sorting_total_count", count)
+					if _, ok := modelValue(value).(sortingDescInterface); ok {
+						if total, ok := db.Get("sorting_total_count"); ok {
+							count = total.(int)
+						} else {
+							var result = res.NewStruct()
+							db.New().Order("position DESC", true).First(result)
+							count = result.(sortingInterface).GetPosition()
+							db.InstantSet("sorting_total_count", count)
+						}
+						pos = count - pos + 1
 					}
-					pos = count - pos + 1
-				}
 
-				primaryKey := ctx.GetDB().NewScope(value).PrimaryKeyValue()
-				url := path.Join(ctx.Request.URL.Path, fmt.Sprintf("%v", primaryKey), "sorting/update_position")
-				return template.HTML(fmt.Sprintf("<input type=\"number\" disabled class=\"qor-sorting__position\" value=\"%v\" data-sorting-url=\"%v\" data-position=\"%v\">", pos, url, pos))
-			},
-			Permission: roles.Allow(roles.Read, "sorting_mode"),
-		})
+					return template.HTML(fmt.Sprintf("%d", pos))
+				},
+				Permission: roles.Allow(roles.Read, "sorting_mode"),
+			})
+		*/
 	}
 }
 
@@ -90,7 +88,7 @@ func (s *Sorting) ConfigureQorResource(res resource.Resourcer) {
 		Admin := res.GetAdmin()
 
 		res.OverrideIndexAttrs(func() {
-			res.IndexAttrs(res.IndexAttrs(), "Position")
+			res.IndexAttrs(res.IndexAttrs(), "-Position")
 		})
 
 		res.OverrideNewAttrs(func() {
@@ -108,4 +106,29 @@ func (s *Sorting) ConfigureQorResource(res resource.Resourcer) {
 		router := Admin.GetRouter()
 		router.Post(fmt.Sprintf("/%v/%v/sorting/update_position", res.ToParam(), res.ParamIDName()), updatePosition)
 	}
+}
+
+func SortingUrl(value interface{}, ctx *admin.Context) interface{} {
+	primaryKey := ctx.GetDB().NewScope(value).PrimaryKeyValue()
+	return path.Join(ctx.Request.URL.Path, fmt.Sprintf("%v", primaryKey), "sorting/update_position")
+}
+
+func SortingPosition(value interface{}, ctx *admin.Context) interface{} {
+	db := ctx.GetDB()
+	var count int
+	var pos = value.(sortingInterface).GetPosition()
+
+	if _, ok := modelValue(value).(sortingDescInterface); ok {
+		if total, ok := db.Get("sorting_total_count"); ok {
+			count = total.(int)
+		} else {
+			var result = ctx.Resource.NewStruct()
+			db.New().Order("position DESC", true).First(result)
+			count = result.(sortingInterface).GetPosition()
+			db.InstantSet("sorting_total_count", count)
+		}
+		pos = count - pos + 1
+	}
+
+	return pos
 }

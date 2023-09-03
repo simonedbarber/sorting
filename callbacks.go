@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/jinzhu/gorm"
-	"github.com/qor/l10n"
+	"github.com/simonedbarber/l10n"
+	"gorm.io/gorm"
 )
 
 func initalizePosition(scope *gorm.Scope) {

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jinzhu/gorm"
-	"github.com/qor/publish"
+	"github.com/simonedbarber/publish"
+	"gorm.io/gorm"
 )
 
 type changedSortingPublishEvent struct {

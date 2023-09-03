@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jinzhu/gorm"
-	"github.com/qor/publish"
-	"github.com/qor/publish2"
-	"github.com/qor/qor/test/utils"
-	"github.com/qor/sorting"
+	"github.com/simonedbarber/publish"
+	"github.com/simonedbarber/publish2"
+	"github.com/simonedbarber/qor/test/utils"
+	"github.com/simonedbarber/sorting"
+	"gorm.io/gorm"
 )
 
 type User struct {

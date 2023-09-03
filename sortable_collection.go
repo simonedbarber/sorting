@@ -8,12 +8,12 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/jinzhu/gorm"
-	"github.com/qor/admin"
-	"github.com/qor/qor"
-	"github.com/qor/qor/resource"
-	"github.com/qor/qor/utils"
-	"github.com/qor/roles"
+	"github.com/simonedbarber/admin"
+	"github.com/simonedbarber/qor"
+	"github.com/simonedbarber/qor/resource"
+	"github.com/simonedbarber/qor/utils"
+	"github.com/simonedbarber/roles"
+	"gorm.io/gorm"
 )
 
 type SortableCollection struct {
